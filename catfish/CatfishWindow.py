@@ -716,7 +716,7 @@ class CatfishWindow(Window):
                 self.update_index_close.grab_focus()
                 self.update_index_close.grab_default()
 
-                return_code = self.updatedb_process.status
+                return_code = self.updatedb_process.exitstatus
                 if return_code not in [1, 2, 3, 126, 127] and not changed:
                     return_code = 1
                 self.show_update_status_infobar(return_code)
