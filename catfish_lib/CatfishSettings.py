@@ -24,6 +24,7 @@ default_settings = {
     'use-headerbar': True,
     'show-hidden-files': False,
     'show-sidebar': False,
+    'close-after-select': True,
     'window-width': 650,
     'window-height': 470,
     'window-x': -1,

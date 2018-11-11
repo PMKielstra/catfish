@@ -134,6 +134,8 @@ class CatfishWindow(Window):
         self.fulltext = builder.get_named_object("menus.application.fulltext")
         self.sidebar_toggle_menu = builder.get_named_object(
             "menus.application.advanced")
+        self.close_after_select = builder.get_named_object(
+            "menus.application.closeafterselect")
 
         # -- Sidebar -- #
         self.button_time_custom = builder.get_named_object(
@@ -345,10 +347,10 @@ class CatfishWindow(Window):
         self.app_menu_event = not self.app_menu_event
         if not self.app_menu_event:
             return
-        if listbox.get_row_at_index(5) == row:
+        if listbox.get_row_at_index(6) == row:
             listbox.get_parent().hide()
             self.on_menu_update_index_activate(row)
-        if listbox.get_row_at_index(6) == row:
+        if listbox.get_row_at_index(7) == row:
             listbox.get_parent().hide()
             self.on_mnu_about_activate(row)
 
@@ -497,6 +499,8 @@ class CatfishWindow(Window):
         self.fulltext.set_active(self.options.fulltext)
         self.sidebar_toggle_menu.set_active(
             self.settings.get_setting('show-sidebar'))
+        self.close_after_select.set_active(
+            self.settings.get_setting('close-after-select'))
 
         self.show_thumbnail = self.options.thumbnails
 
@@ -712,7 +716,7 @@ class CatfishWindow(Window):
                 self.update_index_close.grab_focus()
                 self.update_index_close.grab_default()
 
-                return_code = self.updatedb_process.exitstatus
+                return_code = self.updatedb_process.status
                 if return_code not in [1, 2, 3, 126, 127] and not changed:
                     return_code = 1
                 self.show_update_status_infobar(return_code)
@@ -873,6 +877,10 @@ class CatfishWindow(Window):
     def on_menu_update_index_activate(self, widget):
         """Show the Update Search Index dialog."""
         self.update_index_dialog.show()
+    
+    def on_menu_closeafterselect_toggled(self, widget):
+        active = widget.get_active()
+        self.settings.set_setting('close-after-select', active)
 
     # -- Sidebar -- #
     def on_sidebar_toggle_toggled(self, widget):
@@ -950,6 +958,8 @@ class CatfishWindow(Window):
             command = ['xdg-open', filename]
         try:
             subprocess.Popen(command, shell=False)
+            if(self.settings.get_setting('close-after-select')):
+            	self.destroy()
             return
         except Exception as msg:
             logger.debug('Exception encountered while opening %s.' +
